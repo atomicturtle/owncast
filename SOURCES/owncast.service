@@ -1,0 +1,17 @@
+[Unit]
+Description=Owncast Service
+After=network.target
+
+[Service]
+Type=simple
+User=owncast
+Group=owncast
+ExecStart=/usr/bin/owncast
+Restart=on-failure
+RestartSec=10
+WorkingDirectory=/var/lib/owncast
+Environment=OWNCAST_DIR=/var/lib/owncast
+
+[Install]
+WantedBy=multi-user.target
+
