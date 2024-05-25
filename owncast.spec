@@ -2,7 +2,7 @@
 
 Name:           owncast
 Version:        0.1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Self-hosted live video and web chat server
 
 License:        MIT
@@ -38,6 +38,13 @@ install -d -m 0755 %{buildroot}/%{_sysusersdir}
 install -m 0644 %{SOURCE2} %{buildroot}/%{_sysusersdir}/%{name}.conf
 install -d %{buildroot}/var/lib/owncast
 
+
+# docs
+install -d -m 0755 %{buildroot}/usr/share/doc/%{name}/
+install -m 0644 LICENSE %{buildroot}/usr/share/doc/%{name}/
+install -m 0644 README.md %{buildroot}/usr/share/doc/%{name}/
+install -m 0644 docs/*.md %{buildroot}/usr/share/doc/%{name}/
+
 %pre
 %if 0%{?fedora} || 0%{?rhel} >= 9
 %sysusers_create_compat %{SOURCE2}
@@ -61,6 +68,8 @@ getent passwd owncast >/dev/null || \
 
 
 %files
+%doc README.md LICENSE
+%doc backend.md DESIGN.md product-definition.md Release.md SECURITY.md
 %{_bindir}/%{name}
 /usr/lib/systemd/system/%{name}.service
 %attr(0755,owncast,owncast)  /var/lib/owncast
@@ -70,9 +79,12 @@ getent passwd owncast >/dev/null || \
 
 
 %changelog
-* Sat May 25 2024 Your Name <scott@atomicrocketturtle.com> - 0.1.3-2
+* Sat May 25 2024 Scott R. Shinn <scott@atomicrocketturtle.com> - 0.1.3-3
+- adding documentation 
+
+* Sat May 25 2024 Scott R. Shinn <scott@atomicrocketturtle.com> - 0.1.3-2
 - Updates for better container support
 
-* Wed May 22 2024 Your Name <scott@atomicrocketturtle.com> - 0.1.3-1
+* Wed May 22 2024 Scott R. Shinn <scott@atomicrocketturtle.com> - 0.1.3-1
 - Initial package for Owncast
 
