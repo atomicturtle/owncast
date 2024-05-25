@@ -9,9 +9,11 @@ License:        MIT
 URL:            https://owncast.online
 Source0:        https://github.com/owncast/owncast/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:	owncast.service
+Source2:	owncast.sysusers
 
 BuildRequires:  golang
 BuildRequires:  git
+BuildRequires:  systemd-rpm-macros
 Requires:       glibc
 Requires:	/usr/bin/ffmpeg
 
@@ -32,14 +34,19 @@ install -m 0755 %{name} %{buildroot}%{_bindir}/%{name}
 
 install -d %{buildroot}/usr/lib/systemd/system/
 install -m 644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/%{name}.service
-
+install -d -m 0755 %{buildroot}/%{_sysusersdir}
+install -m 0644 %{SOURCE2} %{buildroot}/%{_sysusersdir}/%{name}.conf
 install -d %{buildroot}/var/lib/owncast
 
 %pre
+%if 0%{?fedora} || 0%{?rhel} >= 9
+%sysusers_create_compat %{SOURCE2}
+%else
 getent group owncast >/dev/null || groupadd -r owncast
 getent passwd owncast >/dev/null || \
 	useradd -r -g owncast -d /var/lib/owncast -s /sbin/nologin \
-	-c "Owncast User" owncast
+	-c "Owncast" owncast
+%endif
 
 %post
 %systemd_post %{name}.service
@@ -50,10 +57,6 @@ getent passwd owncast >/dev/null || \
 
 
 %postun
-if [ $1 -eq 0 ]; then
-    userdel owncast || :
-    groupdel owncast || :
-fi
 %systemd_postun_with_restart %{name}.service
 
 
@@ -61,6 +64,8 @@ fi
 %{_bindir}/%{name}
 /usr/lib/systemd/system/%{name}.service
 %attr(0755,owncast,owncast)  /var/lib/owncast
+%{_sysusersdir}/owncast.conf
+
 
 
 
