@@ -2,7 +2,7 @@
 
 Name:           owncast
 Version:        0.1.3
-Release:        0.1%{?dist}
+Release:        2%{?dist}
 Summary:        Self-hosted live video and web chat server
 
 License:        MIT
@@ -11,7 +11,9 @@ Source0:        https://github.com/owncast/owncast/archive/v%{version}/%{name}-%
 Source1:	owncast.service
 
 BuildRequires:  golang
+BuildRequires:  git
 Requires:       glibc
+Requires:	/usr/bin/ffmpeg
 
 %description
 Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.
@@ -35,35 +37,37 @@ install -d %{buildroot}/var/lib/owncast
 
 %pre
 getent group owncast >/dev/null || groupadd -r owncast
-getent passwd owncast >/dev/null || useradd -r -g owncast -d /var/lib/owncast -s /sbin/nologin -c "Owncast User" owncast
-mkdir -p /var/lib/owncast
-chown owncast:owncast /var/lib/owncast
+getent passwd owncast >/dev/null || \
+	useradd -r -g owncast -d /var/lib/owncast -s /sbin/nologin \
+	-c "Owncast User" owncast
 
 %post
-systemctl daemon-reload
+%systemd_post %{name}.service
+
 
 %preun
-if [ $1 -eq 0 ]; then
-    systemctl stop owncast.service
-    systemctl disable owncast.service
-fi
+%systemd_preun %{name}.service
+
 
 %postun
 if [ $1 -eq 0 ]; then
-    userdel owncast
-    groupdel owncast
-    rm -rf /var/lib/owncast
-    systemctl daemon-reload
+    userdel owncast || :
+    groupdel owncast || :
 fi
+%systemd_postun_with_restart %{name}.service
 
 
 %files
 %{_bindir}/%{name}
 /usr/lib/systemd/system/%{name}.service
+%attr(0755,owncast,owncast)  /var/lib/owncast
 
 
 
 %changelog
+* Sat May 25 2024 Your Name <scott@atomicrocketturtle.com> - 0.1.3-2
+- Updates for better container support
+
 * Wed May 22 2024 Your Name <scott@atomicrocketturtle.com> - 0.1.3-1
 - Initial package for Owncast
 
