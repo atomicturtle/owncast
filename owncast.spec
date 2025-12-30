@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           owncast
-Version:        0.1.3
-Release:        3%{?dist}
+Version:        0.2.3
+Release:        1%{?dist}
 Summary:        Self-hosted live video and web chat server
 
 License:        MIT
@@ -79,6 +79,13 @@ getent passwd owncast >/dev/null || \
 
 
 %changelog
+* Tue Dec 30 2025 Scott R. Shinn <scott@atomicrocketturtle.com> - 0.2.3-1
+- Update to version 0.2.3
+- Includes v0.2.0: Backend refactor, admin password hashing, profanity filter
+- Includes v0.2.1: Bugfix release
+- Includes v0.2.2: Translation support, updated codec support
+- Includes v0.2.3: Bug fixes for Prometheus metrics, FediAuth, and private Federation
+
 * Sat May 25 2024 Scott R. Shinn <scott@atomicrocketturtle.com> - 0.1.3-3
 - adding documentation 
 
